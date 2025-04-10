@@ -43,6 +43,25 @@
     <p id="adminNotice" style="color: red;"></p>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js"></script> 
+  <!-- Firebase App (the core Firebase SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAh8oGpHFh9O31cOXEfxkJVDX4RC5sDHrw",
+    authDomain: "chatmeauth.firebaseapp.com",
+    projectId: "chatmeauth",
+    storageBucket: "chatmeauth.firebasestorage.app",
+    messagingSenderId: "964614544359",
+    appId: "1:964614544359:web:b714e790307691694d3b42",
+    measurementId: "G-FQHLPP8YPY"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
 </body>
 </html>
