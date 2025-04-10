@@ -1,14 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ChatMe</title>
+  <title>ChatMe - Login</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>Welcome to ChatMe</h1>
-  <input type="text" id="searchInput" placeholder="Type your query..." />
-  <button id="searchBtn">Search</button>
 
-  <script src="script.js"></script> <!-- Make sure this is here -->
+  <div id="loginForm">
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+  </div>
+
+  <div id="searchBox" style="display:none;">
+    <input type="text" id="searchInput" placeholder="Type your query..." />
+    <button id="searchBtn">Search</button>
+    <p id="adminNotice" style="color: red;"></p>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
