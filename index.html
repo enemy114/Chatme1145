@@ -7,15 +7,15 @@
 <body>
   <h1>Welcome to ChatMe</h1> 
   <h2>Login with Google</h2>
-<button id="loginBtn">Sign in with Google</button>
-<p id="userDetails"></p>
+  <button id="googleLoginBtn">Sign in with Google</button>
+  <p id="userDetails"></p>
 
   <!-- Login Form -->
   <div id="loginForm">
     <h2>Login</h2>
     <input type="text" id="loginUsername" placeholder="Username or Email" />
     <input type="password" id="loginPassword" placeholder="Password" />
-    <button id="loginBtn">Login</button>
+    <button id="emailLoginBtn">Login</button>
     <p><a href="#" onclick="toggleForms()">Don't have an account? Sign up</a></p>
   </div>
 
@@ -35,7 +35,7 @@
   <!-- Social Login -->
   <div id="socialLogin">
     <p>Or login with:</p>
-    <button onclick="alert('Google Login Coming Soon')">Google</button>
+    <button id="googleLoginBtn">Google</button>
     <button onclick="alert('Facebook Login Coming Soon')">Facebook</button>
   </div>
 
@@ -46,39 +46,38 @@
     <p id="adminNotice" style="color: red;"></p>
   </div>
 
-  <script src="script.js"></script> 
-  <!-- Firebase App (the core Firebase SDK) -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-<script>
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyAh8oGpHFh9O31cOXEfxkJVDX4RC5sDHrw",
-    authDomain: "chatmeauth.firebaseapp.com",
-    projectId: "chatmeauth",
-    storageBucket: "chatmeauth.firebasestorage.app",
-    messagingSenderId: "964614544359",
-    appId: "1:964614544359:web:b714e790307691694d3b42",
-    measurementId: "G-FQHLPP8YPY"
-  };
-
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-</script> 
   <script>
-  const provider = new firebase.auth.GoogleAuthProvider();
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAh8oGpHFh9O31cOXEfxkJVDX4RC5sDHrw",
+      authDomain: "chatmeauth.firebaseapp.com",
+      projectId: "chatmeauth",
+      storageBucket: "chatmeauth.firebasestorage.app",
+      messagingSenderId: "964614544359",
+      appId: "1:964614544359:web:b714e790307691694d3b42",
+      measurementId: "G-FQHLPP8YPY"
+    };
 
-  document.getElementById("loginBtn").addEventListener("click", function () {
-    firebase.auth().signInWithPopup(provider)
-      .then((result) => {
-        const user = result.user;
-        document.getElementById("userDetails").innerText = `Logged in as: ${user.displayName}`;
-      })
-      .catch((error) => {
-        alert("Login failed: " + error.message);
-      });
-  });
-          </script>
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Google Login
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    document.getElementById("googleLoginBtn").addEventListener("click", function () {
+      firebase.auth().signInWithPopup(provider)
+        .then((result) => {
+          const user = result.user;
+          document.getElementById("userDetails").innerText = `Logged in as: ${user.displayName}`;
+        })
+        .catch((error) => {
+          alert("Login failed: " + error.message);
+        });
+    });
+  </script>
 </body>
 </html>
