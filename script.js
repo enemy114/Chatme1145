@@ -1,9 +1,3 @@
-// When the page loads
-window.onload = function () {
-    console.log("JS Loaded!");
-};
-
-// When the search button is clicked
 document.addEventListener("DOMContentLoaded", function () {
     const searchBtn = document.getElementById("searchBtn");
     const searchInput = document.getElementById("searchInput");
@@ -12,7 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
         searchBtn.addEventListener("click", function () {
             const userQuery = searchInput.value.trim();
             if (userQuery) {
-                alert("You searched for: " + userQuery);
+                const searchURL = "https://duckduckgo.com/?q=" + encodeURIComponent(userQuery);
+                window.open(searchURL, "_blank"); // opens in a new tab
             } else {
                 alert("Please type something to search.");
             }
