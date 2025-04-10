@@ -5,7 +5,10 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Welcome to ChatMe</h1>
+  <h1>Welcome to ChatMe</h1> 
+  <h2>Login with Google</h2>
+<button id="loginBtn">Sign in with Google</button>
+<p id="userDetails"></p>
 
   <!-- Login Form -->
   <div id="loginForm">
@@ -62,6 +65,20 @@
 
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
-</script>
+</script> 
+  <script>
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  document.getElementById("loginBtn").addEventListener("click", function () {
+    firebase.auth().signInWithPopup(provider)
+      .then((result) => {
+        const user = result.user;
+        document.getElementById("userDetails").innerText = `Logged in as: ${user.displayName}`;
+      })
+      .catch((error) => {
+        alert("Login failed: " + error.message);
+      });
+  });
+          </script>
 </body>
 </html>
