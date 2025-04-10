@@ -79,5 +79,22 @@
         });
     });
   </script>
+  <script>
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  document.getElementById("googleLoginBtn").addEventListener("click", function () {
+    firebase.auth().signInWithPopup(provider)
+      .then((result) => {
+        const user = result.user;
+        document.getElementById("userDetails").innerText = `Logged in as: ${user.displayName}`;
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("signupForm").style.display = "none";
+        document.getElementById("searchBox").style.display = "block";
+      })
+      .catch((error) => {
+        alert("Google Login failed: " + error.message);
+      });
+  });
+  </script>
 </body>
 </html>
