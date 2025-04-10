@@ -7,20 +7,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const adminNotice = document.getElementById("adminNotice");
 
     const ADMIN_USER = "admin";
-    const ADMIN_PASS = "1234"; // You can change this
+    const ADMIN_PASS = "1234";
 
     if (loginBtn) {
         loginBtn.addEventListener("click", function () {
             const user = document.getElementById("username").value;
             const pass = document.getElementById("password").value;
 
+            loginForm.style.display = "none";
+            searchBox.style.display = "block";
+
             if (user === ADMIN_USER && pass === ADMIN_PASS) {
-                loginForm.style.display = "none";
-                searchBox.style.display = "block";
                 adminNotice.textContent = "Logged in as Admin.";
             } else {
-                loginForm.style.display = "none";
-                searchBox.style.display = "block";
                 adminNotice.textContent = "";
             }
         });
