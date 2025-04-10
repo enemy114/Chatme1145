@@ -7,7 +7,7 @@
 <body>
   <h1>Welcome to ChatMe</h1> 
   <h2>Login with Google</h2>
-  <button id="googleLoginBtn">Sign in with Google</button>
+  <button id="googleSignInBtn">Sign in with Google</button>
   <p id="userDetails"></p>
 
   <!-- Login Form -->
@@ -35,7 +35,7 @@
   <!-- Social Login -->
   <div id="socialLogin">
     <p>Or login with:</p>
-    <button id="googleLoginBtn">Google</button>
+    <button onclick="document.getElementById('googleSignInBtn').click()">Google</button>
     <button onclick="alert('Facebook Login Coming Soon')">Facebook</button>
   </div>
 
@@ -51,7 +51,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
   <script>
-    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAh8oGpHFh9O31cOXEfxkJVDX4RC5sDHrw",
       authDomain: "chatmeauth.firebaseapp.com",
@@ -62,39 +61,25 @@
       measurementId: "G-FQHLPP8YPY"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
 
-    // Google Login
     const provider = new firebase.auth.GoogleAuthProvider();
 
-    document.getElementById("googleLoginBtn").addEventListener("click", function () {
-      firebase.auth().signInWithPopup(provider)
-        .then((result) => {
-          const user = result.user;
-          document.getElementById("userDetails").innerText = `Logged in as: ${user.displayName}`;
-        })
-        .catch((error) => {
-          alert("Login failed: " + error.message);
-        });
-    });
-  </script>
-  <script>
-  const provider = new firebase.auth.GoogleAuthProvider();
-
-  document.getElementById("googleLoginBtn").addEventListener("click", function () {
-    firebase.auth().signInWithPopup(provider)
-      .then((result) => {
-        const user = result.user;
-        document.getElementById("userDetails").innerText = `Logged in as: ${user.displayName}`;
-        document.getElementById("loginForm").style.display = "none";
-        document.getElementById("signupForm").style.display = "none";
-        document.getElementById("searchBox").style.display = "block";
-      })
-      .catch((error) => {
-        alert("Google Login failed: " + error.message);
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("googleSignInBtn").addEventListener("click", function () {
+        firebase.auth().signInWithPopup(provider)
+          .then((result) => {
+            const user = result.user;
+            document.getElementById("userDetails").innerText = `Logged in as: ${user.displayName}`;
+            document.getElementById("loginForm").style.display = "none";
+            document.getElementById("signupForm").style.display = "none";
+            document.getElementById("searchBox").style.display = "block";
+          })
+          .catch((error) => {
+            alert("Google Login failed: " + error.message);
+          });
       });
-  });
+    });
   </script>
 </body>
 </html>
