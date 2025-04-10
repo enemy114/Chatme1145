@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
+    // Login Button
     if (loginBtn) {
         loginBtn.addEventListener("click", function () {
             const user = document.getElementById("loginUsername").value;
@@ -35,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // Signup Button
     if (signupBtn) {
         signupBtn.addEventListener("click", function () {
             const pass = document.getElementById("createPassword").value;
@@ -49,6 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // Search Button
     if (searchBtn) {
         searchBtn.addEventListener("click", function () {
             const userQuery = document.getElementById("searchInput").value.trim();
