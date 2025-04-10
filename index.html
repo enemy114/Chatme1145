@@ -1,20 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ChatMe - Login</title>
+  <title>ChatMe - Login or Sign Up</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>Welcome to ChatMe</h1>
 
-  <!-- Login form -->
+  <!-- Login Form -->
   <div id="loginForm">
-    <input type="text" id="username" placeholder="Username" />
-    <input type="password" id="password" placeholder="Password" />
+    <h2>Login</h2>
+    <input type="text" id="loginUsername" placeholder="Username or Email" />
+    <input type="password" id="loginPassword" placeholder="Password" />
     <button id="loginBtn">Login</button>
+    <p><a href="#" onclick="toggleForms()">Don't have an account? Sign up</a></p>
   </div>
 
-  <!-- Search box (hidden by default) -->
+  <!-- Sign-Up Form -->
+  <div id="signupForm" style="display: none;">
+    <h2>Create Account</h2>
+    <input type="text" id="firstName" placeholder="First Name" />
+    <input type="text" id="lastName" placeholder="Last Name" />
+    <input type="text" id="phone" placeholder="Phone Number" />
+    <input type="email" id="signupEmail" placeholder="Email" />
+    <input type="password" id="createPassword" placeholder="Create Password" />
+    <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+    <button id="signupBtn">Create Account</button>
+    <p><a href="#" onclick="toggleForms()">Already have an account? Login</a></p>
+  </div>
+
+  <!-- Social Login -->
+  <div id="socialLogin">
+    <p>Or login with:</p>
+    <button onclick="alert('Google Login Coming Soon')">Google</button>
+    <button onclick="alert('Facebook Login Coming Soon')">Facebook</button>
+  </div>
+
+  <!-- Search Box -->
   <div id="searchBox" style="display:none;">
     <input type="text" id="searchInput" placeholder="Type your query..." />
     <button id="searchBtn">Search</button>
