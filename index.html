@@ -1,139 +1,142 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en">
 <head>
-  <title>ChatMe - Login or Sign Up</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChatMe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Product+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Product Sans', sans-serif;
+      background: linear-gradient(to right, #00aaff, #004466);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      padding-top: 50px;
+    }h1 {
+  font-size: 64px;
+  font-weight: bold;
+  letter-spacing: 3px;
+  background: linear-gradient(90deg, #ffcc00, #ff3366);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+#searchInput {
+  width: 60%;
+  padding: 15px;
+  font-size: 18px;
+  border: none;
+  border-radius: 50px;
+  outline: none;
+  margin: 20px 0;
+}
+
+#searchBtn {
+  padding: 10px 25px;
+  border-radius: 50px;
+  background-color: #ffffff;
+  color: #004466;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#searchBtn:hover {
+  background-color: #e0e0e0;
+}
+
+.category-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.category-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 30px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.category-buttons button:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+#results {
+  width: 80%;
+  background-color: white;
+  color: #222;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 30px;
+  display: none;
+}
+
+#loginSection {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+#loginSection button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  background-color: white;
+  color: #004466;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+  </style>
 </head>
 <body>
-  <h1>Welcome to ChatMe</h1> 
-  <h2>Login with Google</h2>
-  <button id="googleSignInBtn">Sign in with Google</button>
-  <p id="userDetails"></p>
+  <div id="loginSection">
+    <button id="loginToggleBtn">Login</button>
+  </div>  <h1>ChatMe</h1>
+  <input type="text" id="searchInput" placeholder="Search ChatMe..." />
+  <button id="searchBtn">Search</button>  <div class="category-buttons">
+    <button>Images</button>
+    <button>PDFs</button>
+    <button>News</button>
+    <button>Shopping</button>
+  </div>  <div id="results"></div>  <script>
+    const searchBtn = document.getElementById('searchBtn');
+    const searchInput = document.getElementById('searchInput');
+    const results = document.getElementById('results');
+    const loginToggleBtn = document.getElementById('loginToggleBtn');
 
-  <!-- Login Form -->
-  <div id="loginForm">
-    <h2>Login</h2>
-    <input type="text" id="loginUsername" placeholder="Username or Email" />
-    <input type="password" id="loginPassword" placeholder="Password" />
-    <button id="emailLoginBtn">Login</button>
-    <p><a href="#" onclick="toggleForms()">Don't have an account? Sign up</a></p>
-  </div>
+    let isLoggedIn = false;
 
-  <!-- Sign-Up Form -->
-  <div id="signupForm" style="display: none;">
-    <h2>Create Account</h2>
-    <input type="text" id="firstName" placeholder="First Name" />
-    <input type="text" id="lastName" placeholder="Last Name" />
-    <input type="text" id="phone" placeholder="Phone Number" />
-    <input type="email" id="signupEmail" placeholder="Email" />
-    <input type="password" id="createPassword" placeholder="Create Password" />
-    <input type="password" id="confirmPassword" placeholder="Confirm Password" />
-    <button id="signupBtn">Create Account</button>
-    <p><a href="#" onclick="toggleForms()">Already have an account? Login</a></p>
-  </div>
-
-  <!-- Search Box -->
-  <div id="searchBox" style="display:none;">
-    <input type="text" id="searchInput" placeholder="Type your query..." />
-    <button id="searchBtn">Search</button>
-    <p id="adminNotice" style="color: red;"></p>
-  </div>
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAh8oGpHFh9O31cOXEfxkJVDX4RC5sDHrw",
-      authDomain: "chatmeauth.firebaseapp.com",
-      projectId: "chatmeauth",
-      storageBucket: "chatmeauth.appspot.com",
-      messagingSenderId: "964614544359",
-      appId: "1:964614544359:web:b714e790307691694d3b42",
-      measurementId: "G-FQHLPP8YPY"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-  </script>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const googleBtn = document.getElementById("googleSignInBtn");
-      const emailLoginBtn = document.getElementById("emailLoginBtn");
-      const signupBtn = document.getElementById("signupBtn");
-      const searchBtn = document.getElementById("searchBtn");
-
-      const loginForm = document.getElementById("loginForm");
-      const signupForm = document.getElementById("signupForm");
-      const searchBox = document.getElementById("searchBox");
-      const adminNotice = document.getElementById("adminNotice");
-
-      // Google Sign-In
-      const provider = new firebase.auth.GoogleAuthProvider();
-      googleBtn.addEventListener("click", function () {
-        firebase.auth().signInWithPopup(provider)
-          .then((result) => {
-            const user = result.user;
-            document.getElementById("userDetails").innerText = `Logged in as: ${user.displayName}`;
-            loginForm.style.display = "none";
-            signupForm.style.display = "none";
-            searchBox.style.display = "block";
-          })
-          .catch((error) => {
-            alert("Google Login failed: " + error.message);
-          });
-      });
-
-      // Toggle forms
-      window.toggleForms = function () {
-        if (loginForm.style.display === "none") {
-          loginForm.style.display = "block";
-          signupForm.style.display = "none";
-        } else {
-          loginForm.style.display = "none";
-          signupForm.style.display = "block";
-        }
-      };
-
-      // Email login
-      emailLoginBtn.addEventListener("click", function () {
-        const user = document.getElementById("loginUsername").value;
-        const pass = document.getElementById("loginPassword").value;
-
-        loginForm.style.display = "none";
-        searchBox.style.display = "block";
-
-        if (user === "admin" && pass === "1234") {
-          adminNotice.textContent = "Logged in as Admin.";
-        } else {
-          adminNotice.textContent = "";
-        }
-      });
-
-      // Signup validation
-      signupBtn.addEventListener("click", function () {
-        const pass = document.getElementById("createPassword").value;
-        const confirm = document.getElementById("confirmPassword").value;
-
-        if (pass !== confirm) {
-          alert("Passwords do not match.");
-        } else {
-          alert("Account created successfully!");
-          toggleForms();
-        }
-      });
-
-      // Search
-      searchBtn.addEventListener("click", function () {
-        const query = document.getElementById("searchInput").value.trim();
-        if (query) {
-          window.open("https://duckduckgo.com/?q=" + encodeURIComponent(query), "_blank");
-        } else {
-          alert("Please type something to search.");
-        }
-      });
+    loginToggleBtn.addEventListener('click', () => {
+      isLoggedIn = !isLoggedIn;
+      loginToggleBtn.textContent = isLoggedIn ? 'Logout' : 'Login';
+      alert(isLoggedIn ? 'You are now logged in!' : 'You are logged out.');
     });
-  </script>
-</body>
+
+    searchBtn.addEventListener('click', () => {
+      const query = searchInput.value.trim();
+      if (query === '') {
+        alert('Please enter a search term.');
+        return;
+      }
+
+      if (!isLoggedIn) {
+        alert('Please login to search.');
+        return;
+      }
+
+      // Simulated results
+      results.style.display = 'block';
+      results.innerHTML = `<h3>Results for: "${query}"</h3><p>This is where your custom search results will be shown.</p>`;
+    });
+  </script></body>
 </html>
