@@ -1,66 +1,29 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const loginBtn = document.getElementById("loginBtn");
-    const signupBtn = document.getElementById("signupBtn");
-    const searchBtn = document.getElementById("searchBtn");
+// Firebase & Algolia Integration const firebaseConfig = { apiKey: "AIzaSyAh8oGpHFh9O31cOXEfxkJVDX4RC5sDHrw", authDomain: "chatmeauth.firebaseapp.com", projectId: "chatmeauth", storageBucket: "chatmeauth.appspot.com", messagingSenderId: "964614544359", appId: "1:964614544359:web:b714e790307691694d3b42" };
 
-    const loginForm = document.getElementById("loginForm");
-    const signupForm = document.getElementById("signupForm");
-    const searchBox = document.getElementById("searchBox");
-    const adminNotice = document.getElementById("adminNotice");
+firebase.initializeApp(firebaseConfig); const auth = firebase.auth(); const db = firebase.firestore(); const provider = new firebase.auth.GoogleAuthProvider();
 
-    // Switch forms
-    window.toggleForms = function () {
-        if (loginForm.style.display === "none") {
-            loginForm.style.display = "block";
-            signupForm.style.display = "none";
-        } else {
-            loginForm.style.display = "none";
-            signupForm.style.display = "block";
-        }
-    };
+const googleBtn = document.getElementById("googleLoginBtn"); const searchInput = document.getElementById("searchInput"); const resultsDiv = document.getElementById("results"); const loginContainer = document.getElementById("loginContainer"); const searchContainer = document.getElementById("searchContainer");
 
-    // Login Button
-    if (loginBtn) {
-        loginBtn.addEventListener("click", function () {
-            const user = document.getElementById("loginUsername").value;
-            const pass = document.getElementById("loginPassword").value;
+// Algolia const algoliaAppId = "YOUR_ALGOLIA_APP_ID"; const algoliaSearchKey = "YOUR_ALGOLIA_SEARCH_KEY"; const algoliaIndexName = "YOUR_INDEX_NAME";
 
-            loginForm.style.display = "none";
-            searchBox.style.display = "block";
+const algoliaClient = algoliasearch(algoliaAppId, algoliaSearchKey); const index = algoliaClient.initIndex(algoliaIndexName);
 
-            if (user === "admin" && pass === "1234") {
-                adminNotice.textContent = "Logged in as Admin.";
-            } else {
-                adminNotice.textContent = "";
-            }
-        });
-    }
+// Login button if (googleBtn) { googleBtn.addEventListener("click", () => { auth.signInWithPopup(provider).then(result => { const user = result.user; loginContainer.style.display = "none"; searchContainer.style.display = "block"; document.getElementById("userEmail").textContent = user.email; }); }); }
 
-    // Signup Button
-    if (signupBtn) {
-        signupBtn.addEventListener("click", function () {
-            const pass = document.getElementById("createPassword").value;
-            const confirm = document.getElementById("confirmPassword").value;
+// Search function performSearch(query) { index.search(query).then(({ hits }) => { resultsDiv.innerHTML = "<h3>Search Results:</h3>"; hits.forEach(hit => { const item = document.createElement("div"); item.innerHTML = <p><strong>${hit.title}</strong><br>${hit.description || ''}</p>; resultsDiv.appendChild(item); }); resultsDiv.style.display = 'block';
 
-            if (pass !== confirm) {
-                alert("Passwords do not match.");
-            } else {
-                alert("Account created successfully!");
-                toggleForms();
-            }
-        });
-    }
+const user = auth.currentUser;
+if (user) {
+  db.collection("searchHistory").add({
+    email: user.email,
+    query: query,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
 
-    // Search Button
-    if (searchBtn) {
-        searchBtn.addEventListener("click", function () {
-            const userQuery = document.getElementById("searchInput").value.trim();
-            if (userQuery) {
-                const searchURL = "https://duckduckgo.com/?q=" + encodeURIComponent(userQuery);
-                window.open(searchURL, "_blank");
-            } else {
-                alert("Please type something to search.");
-            }
-        });
-    }
-});
+}); }
+
+document.getElementById("searchBtn").addEventListener("click", () => { const query = searchInput.value.trim(); if (query) performSearch(query); });
+
+// Hide login if already signed in auth.onAuthStateChanged(user => { if (user) { loginContainer.style.display = "none"; searchContainer.style.display = "block"; document.getElementById("userEmail").textContent = user.email; } });
+
