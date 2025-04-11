@@ -1,104 +1,40 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChatMe - Search Smarter</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ChatMe - Search</title>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/algoliasearch/dist/algoliasearch-lite.umd.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-    body { background: linear-gradient(135deg, #1f3b7d, #6190e8); color: white; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
-    .logo { font-size: 4rem; font-weight: bold; margin: 40px 0 20px; text-shadow: 2px 2px #000; animation: bounce 2s infinite; }
-    .logo span { color: #ffcc00; }
-    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-    #authButtons button, #logoutBtn { padding: 10px 20px; margin: 10px; border: none; border-radius: 25px; background: #fff; color: #1f3b7d; font-weight: bold; cursor: pointer; transition: 0.3s; }
-    #authButtons button:hover, #logoutBtn:hover { background: #ffd700; }
-    #searchSection { display: none; width: 100%; max-width: 700px; margin-top: 30px; }
-    #searchInput { padding: 15px; border-radius: 30px; border: none; width: 70%; }
-    #searchBtn { padding: 15px 25px; border-radius: 30px; border: none; background: #ffcc00; color: #1f3b7d; font-weight: bold; cursor: pointer; }
-    .categories { margin-top: 20px; display: none; justify-content: center; gap: 10px; }
-    .categories button { padding: 10px 15px; border-radius: 20px; border: none; background: #fff; color: #1f3b7d; cursor: pointer; font-weight: bold; }
-    #results { margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 15px; width: 100%; max-width: 700px; display: none; }
-  </style>
 </head>
 <body>
-  <h1 class="logo">Chat<span>Me</span></h1>  <div id="authButtons">
-    <button id="googleLoginBtn">Sign in with Google</button>
-    <button id="logoutBtn" style="display:none;">Logout</button>
-  </div>  <div id="searchSection">
-    <input type="text" id="searchInput" placeholder="Search ChatMe...">
-    <button id="searchBtn">Search</button><div class="categories" id="categories">
-  <button onclick="filterResults('images')">Images</button>
-  <button onclick="filterResults('pdfs')">PDFs</button>
-  <button onclick="filterResults('news')">News</button>
-</div>
+  <div class="container">
+    <h1 class="chatme-logo">Chat<span>Me</span></h1>
 
-<div id="results"></div>
+    <div id="authSection">
+      <button id="googleLoginBtn">Sign in with Google</button>
+      <button id="logoutBtn" style="display: none;">Logout</button>
+    </div>
 
-  </div>  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAh8oGpHFh9O31cOXEfxkJVDX4RC5sDHrw",
-      authDomain: "chatmeauth.firebaseapp.com",
-      projectId: "chatmeauth",
-      storageBucket: "chatmeauth.appspot.com",
-      messagingSenderId: "964614544359",
-      appId: "1:964614544359:web:b714e790307691694d3b42"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    const provider = new firebase.auth.GoogleAuthProvider();
+    <div id="searchSection" style="display: none;">
+      <p id="welcomeEmail"></p>
+      <input type="text" id="searchInput" placeholder="Search something..." />
+      <button id="searchBtn">Search</button>
 
-    const googleBtn = document.getElementById("googleLoginBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const searchSection = document.getElementById("searchSection");
-    const categories = document.getElementById("categories");
-    const resultsDiv = document.getElementById("results");
+      <div class="categories" id="categories" style="display: none;">
+        <button data-type="images">Images</button>
+        <button data-type="pdfs">PDFs</button>
+        <button data-type="news">News</button>
+        <button data-type="shopping">Shopping</button>
+      </div>
 
-    googleBtn.onclick = () => {
-      auth.signInWithPopup(provider).then(result => {
-        document.getElementById("authButtons").style.display = "none";
-        searchSection.style.display = "block";
-        logoutBtn.style.display = "inline-block";
-      });
-    };
+      <div id="results"></div>
+    </div>
+  </div>
 
-    logoutBtn.onclick = () => {
-      auth.signOut().then(() => location.reload());
-    };
-
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById("authButtons").style.display = "none";
-        searchSection.style.display = "block";
-        logoutBtn.style.display = "inline-block";
-      }
-    });
-
-    const client = algoliasearch("YOUR_ALGOLIA_APP_ID", "YOUR_ALGOLIA_SEARCH_KEY");
-    const index = client.initIndex("YOUR_INDEX_NAME");
-
-    document.getElementById("searchBtn").onclick = () => {
-      const query = document.getElementById("searchInput").value.trim();
-      if (!query) return;
-      index.search(query).then(({ hits }) => {
-        resultsDiv.innerHTML = '<h3>Search Results:</h3>';
-        hits.forEach(hit => {
-          const item = document.createElement("div");
-          item.innerHTML = `<p><strong>${hit.title}</strong><br>${hit.description || ''}</p>`;
-          resultsDiv.appendChild(item);
-        });
-        resultsDiv.style.display = "block";
-        categories.style.display = "flex";
-        db.collection("searchHistory").add({ email: auth.currentUser.email, query, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-      });
-    };
-
-    function filterResults(type) {
-      alert("Filter for: " + type + " is clicked. You can integrate filters with Algolia tags here.");
-    }
-  </script></body>
+  <script src="script.js"></script>
+</body>
 </html>
