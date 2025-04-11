@@ -1,4 +1,4 @@
-// Firebase config
+// Firebase Setup
 const firebaseConfig = {
   apiKey: "AIzaSyAh8oGpHFh9O31cOXEfxkJVDX4RC5sDHrw",
   authDomain: "chatmeauth.firebaseapp.com",
@@ -10,71 +10,56 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const provider = new firebase.auth.GoogleAuthProvider();
 
-const emailInput = document.getElementById("emailInput");
-const passwordInput = document.getElementById("passwordInput");
-const signUpBtn = document.getElementById("signUpBtn");
-const loginBtn = document.getElementById("loginBtn");
-const googleBtn = document.getElementById("googleBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-
+// DOM Elements
+const googleBtn = document.getElementById("googleLoginBtn");
 const authSection = document.getElementById("authSection");
 const searchSection = document.getElementById("searchSection");
-const userEmailSpan = document.getElementById("userEmail");
-
-const searchBtn = document.getElementById("searchBtn");
 const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
 const resultsDiv = document.getElementById("results");
-const categoriesDiv = document.getElementById("categories");
 
-signUpBtn.onclick = () => {
-  auth.createUserWithEmailAndPassword(emailInput.value, passwordInput.value)
-    .then(() => alert("Account created"))
-    .catch(e => alert(e.message));
-};
-
-loginBtn.onclick = () => {
-  auth.signInWithEmailAndPassword(emailInput.value, passwordInput.value)
-    .catch(e => alert(e.message));
-};
-
-googleBtn.onclick = () => {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).catch(e => alert(e.message));
-};
-
-logoutBtn.onclick = () => {
-  auth.signOut();
-};
-
-auth.onAuthStateChanged(user => {
-  if (user) {
+// Auth
+googleBtn.addEventListener("click", () => {
+  auth.signInWithPopup(provider).then((result) => {
     authSection.style.display = "none";
     searchSection.style.display = "block";
-    userEmailSpan.textContent = user.email;
-  } else {
-    authSection.style.display = "block";
-    searchSection.style.display = "none";
-  }
+  }).catch((error) => {
+    alert("Login error: " + error.message);
+  });
 });
 
-searchBtn.onclick = () => {
+// Search
+searchBtn.addEventListener("click", () => {
   const query = searchInput.value.trim();
-  if (query) {
-    resultsDiv.innerHTML = `<p>Results for "<strong>${query}</strong>":</p>`;
-    categoriesDiv.style.display = "block";
+  if (!query) return;
+  resultsDiv.innerHTML = `<h3>Search Results for "${query}"</h3>`;
+  document.getElementById("categories").style.display = "block";
 
-    // Example result
-    resultsDiv.innerHTML += `<div><p><strong>${query}</strong> is being processed with AI...</p></div>`;
-
-    // Store to Firestore
-    const user = auth.currentUser;
-    if (user) {
-      db.collection("searches").add({
-        email: user.email,
-        query: query,
-        time: new Date()
-      });
-    }
+  // Log search
+  const user = auth.currentUser;
+  if (user) {
+    db.collection("searches").add({
+      email: user.email,
+      query: query,
+      time: firebase.firestore.FieldValue.serverTimestamp()
+    });
   }
-};
+
+  // Placeholder: Replace with Algolia or AI later
+  resultsDiv.innerHTML += `<p>Sorry, AI search not integrated yet. This is a placeholder.</p>`;
+});
+
+// Voice Search
+document.getElementById("voiceSearchBtn").addEventListener("click", () => {
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.onresult = (event) => {
+    searchInput.value = event.results[0][0].transcript;
+  };
+  recognition.start();
+});
+
+function showTab(type) {
+  resultsDiv.innerHTML = `<h3>${type.toUpperCase()} results will show here</h3>`;
+}
