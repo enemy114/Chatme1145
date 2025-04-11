@@ -1,14 +1,18 @@
 <!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChatMe Search</title>  <!-- Firebase -->  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>  <!-- Styles -->  <style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChatMe</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-      color: white;
+      background: linear-gradient(120deg, #1e3c72, #2a5298);
       height: 100vh;
+      color: white;
       overflow: hidden;
     }
     .container {
@@ -18,19 +22,16 @@
       z-index: 10;
     }
     .logo {
-      font-size: 3rem;
+      font-size: 3.5rem;
       font-weight: bold;
       background: linear-gradient(to right, #00c6ff, #0072ff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: fadeIn 2s ease-in-out infinite alternate;
+      animation: fadeIn 2s ease-in-out;
     }
     @keyframes fadeIn {
-      from { transform: scale(0.9); opacity: 0.7; }
-      to { transform: scale(1.1); opacity: 1; }
-    }
-    #authButtons, #searchSection {
-      margin-top: 40px;
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
     }
     input[type="text"] {
       padding: 12px;
@@ -39,6 +40,7 @@
       border-radius: 25px;
       border: none;
       outline: none;
+      margin-top: 20px;
     }
     button {
       padding: 10px 18px;
@@ -49,19 +51,6 @@
       background-color: #00c6ff;
       color: white;
       font-weight: bold;
-    }
-    #results {
-      margin-top: 30px;
-      text-align: left;
-      padding: 0 20px;
-    }
-    .categories {
-      display: none;
-      justify-content: center;
-      margin-top: 20px;
-    }
-    .categories button {
-      background-color: #0072ff;
     }
     #logoutBtn {
       position: absolute;
@@ -75,7 +64,7 @@
       bottom: -100px;
       width: 20px;
       height: 20px;
-      background: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.2);
       border-radius: 50%;
       animation: rise 10s infinite ease-in;
     }
@@ -83,11 +72,25 @@
       0% { transform: translateY(0); opacity: 1; }
       100% { transform: translateY(-1200px); opacity: 0; }
     }
-  </style></head>
+    #popup {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      display: none;
+      z-index: 999;
+    }
+  </style>
+</head>
 <body>
+  <div id="popup"></div>
   <script>
-    for (let i = 0; i < 20; i++) {
-      let bubble = document.createElement("div");
+    for (let i = 0; i < 30; i++) {
+      const bubble = document.createElement("div");
       bubble.classList.add("bubble");
       bubble.style.left = `${Math.random() * 100}%`;
       bubble.style.width = bubble.style.height = `${10 + Math.random() * 30}px`;
@@ -95,24 +98,16 @@
       document.body.appendChild(bubble);
     }
   </script>  <div class="container">
-    <div class="logo">Chat<span style="color: yellow;">M</span>e</div><div id="authButtons">
-  <button id="googleLoginBtn">Sign in with Google</button>
-</div>
-
-<div id="searchSection" style="display:none;">
-  <input type="text" id="searchInput" placeholder="Search with AI..." />
+    <div class="logo">Chat<span style="color: yellow;">M</span>e</div>
+    <div id="authSection">
+      <button id="googleLoginBtn">Sign in with Google</button>
+    </div><div id="searchSection" style="display:none;">
+  <input type="text" id="searchInput" placeholder="Ask something with AI...">
   <button id="micBtn">🎤</button>
   <button id="searchBtn">Search</button>
-
-  <div class="categories">
-    <button>Images</button>
-    <button>PDFs</button>
-  </div>
-
   <div id="results"></div>
+  <button id="logoutBtn">Logout</button>
 </div>
-
-<button id="logoutBtn" style="display:none;">Logout</button>
 
   </div>  <script>
     const firebaseConfig = {
@@ -123,76 +118,84 @@
       messagingSenderId: "964614544359",
       appId: "1:964614544359:web:b714e790307691694d3b42"
     };
-
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-    const provider = new firebase.auth.GoogleAuthProvider();
 
     const googleBtn = document.getElementById("googleLoginBtn");
     const logoutBtn = document.getElementById("logoutBtn");
+    const searchInput = document.getElementById("searchInput");
     const searchBtn = document.getElementById("searchBtn");
     const micBtn = document.getElementById("micBtn");
-    const searchInput = document.getElementById("searchInput");
-    const resultsDiv = document.getElementById("results");
+    const results = document.getElementById("results");
+    const authSection = document.getElementById("authSection");
     const searchSection = document.getElementById("searchSection");
-    const authButtons = document.getElementById("authButtons");
-    const categories = document.querySelector(".categories");
+    const popup = document.getElementById("popup");
 
-    googleBtn.addEventListener("click", () => {
-      auth.signInWithPopup(provider).then(result => {
-        showSearchPage(result.user);
+    googleBtn.onclick = () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).then(res => {
+        authSection.style.display = "none";
+        searchSection.style.display = "block";
       });
-    });
+    };
 
-    logoutBtn.addEventListener("click", () => {
+    logoutBtn.onclick = () => {
       auth.signOut().then(() => location.reload());
-    });
+    };
 
     auth.onAuthStateChanged(user => {
-      if (user) showSearchPage(user);
+      if (user) {
+        authSection.style.display = "none";
+        searchSection.style.display = "block";
+      }
     });
 
-    function showSearchPage(user) {
-      authButtons.style.display = "none";
-      searchSection.style.display = "block";
-      logoutBtn.style.display = "block";
-    }
-
-    searchBtn.addEventListener("click", () => {
+    searchBtn.onclick = () => {
       const query = searchInput.value.trim();
-      if (query) performSearch(query);
-    });
-
-    micBtn.addEventListener("click", () => {
-      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.lang = 'en-US';
-      recognition.start();
-      recognition.onresult = function (event) {
-        const voiceText = event.results[0][0].transcript;
-        searchInput.value = voiceText;
-        performSearch(voiceText);
-      };
-    });
-
-    function performSearch(query) {
-      resultsDiv.innerHTML = `<h3>Results for "${query}"</h3>`;
-      resultsDiv.innerHTML += `
-        <p><strong>AI:</strong> Here's what I found for you:</p>
-        <ul>
-          <li><a href="https://source.unsplash.com/600x400/?${query}" target="_blank">Image Result</a></li>
-          <li><a href="https://www.africau.edu/images/default/sample.pdf" download>Download PDF</a></li>
-        </ul>`;
-      categories.style.display = "flex";
+      if (!query) return;
+      results.innerHTML = `<h3>Results for: <em>${query}</em></h3>`;
+      results.innerHTML += `<p><strong>AI:</strong> Based on your query, here are some resources:</p>`;
+      results.innerHTML += `<ul>
+        <li><a href="https://source.unsplash.com/600x400/?${query}" target="_blank">Image for ${query}</a></li>
+        <li><a href="https://www.africau.edu/images/default/sample.pdf" download>Sample PDF Download</a></li>
+      </ul>`;
 
       const user = auth.currentUser;
       if (user) {
         db.collection("searchHistory").add({
           email: user.email,
-          query: query,
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          query,
+          time: firebase.firestore.FieldValue.serverTimestamp()
         });
       }
+    };
+
+    micBtn.onclick = () => {
+      if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        alert("Speech Recognition not supported");
+        return;
+      }
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.start();
+      showPopup("Listening... speak now");
+
+      recognition.onresult = e => {
+        const voiceText = e.results[0][0].transcript;
+        searchInput.value = voiceText;
+        searchBtn.click();
+      };
+
+      recognition.onend = () => {
+        showPopup("Stopped listening");
+        setTimeout(() => popup.style.display = 'none', 2000);
+      };
+    };
+
+    function showPopup(message) {
+      popup.textContent = message;
+      popup.style.display = 'block';
     }
   </script></body>
 </html>
