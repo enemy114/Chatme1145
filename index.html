@@ -3,21 +3,27 @@
 <head>
   <title>ChatMe Search</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/algoliasearch/dist/algoliasearch-lite.umd.js"></script>
+
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Algolia -->
+  <script src="https://cdn.jsdelivr.net/npm/algoliasearch/dist/algoliasearch-lite.umd.js"></script>
 </head>
 <body>
   <div class="container">
     <h1 class="logo">Chat<span>M</span>e</h1>
 
-    <div id="authButtons">
+    <div id="loginContainer">
       <button id="googleLoginBtn">Sign in with Google</button>
-      <button id="logoutBtn" style="display:none;">Logout</button>
     </div>
 
-    <div id="searchSection" style="display:none;">
+    <div id="searchContainer" style="display:none;">
+      <p>Welcome, <span id="userEmail"></span></p>
+      <button id="logoutBtn">Logout</button>
+
       <input type="text" id="searchInput" placeholder="Search anything..." />
       <button id="searchBtn">Search</button>
 
