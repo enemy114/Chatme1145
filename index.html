@@ -3,37 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ChatMe</title>
+  <title>ChatMe Search</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/algoliasearch/dist/algoliasearch-lite.umd.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <div class="background-animation"></div>
+  <div class="main-container">
+    <h1 class="logo-text">Chat<span>Me</span></h1>
 
-  <h1 class="logo">Chat<span>M</span>e</h1>
-
-  <div id="authSection">
-    <input type="email" id="emailInput" placeholder="Email" />
-    <input type="password" id="passwordInput" placeholder="Password" />
-    <button id="signUpBtn">Sign Up</button>
-    <button id="loginBtn">Login</button>
-    <button id="googleBtn">Sign in with Google</button>
-  </div>
-
-  <div id="searchSection" style="display:none;">
-    <p>Welcome, <span id="userEmail"></span></p>
-    <input type="text" id="searchInput" placeholder="Search with AI..." />
-    <button id="voiceSearchBtn">🎤</button>
-    <button id="searchBtn">Search</button>
-    <div class="categories" id="categories" style="display:none;">
-      <button class="cat-btn" data-type="images">Images</button>
-      <button class="cat-btn" data-type="pdfs">PDFs</button>
+    <div class="auth-section" id="authSection">
+      <button id="googleLoginBtn">Sign in with Google</button>
+      <p>New to ChatMe? <a href="#" id="signupBtn">Sign up</a></p>
     </div>
-    <div id="results"></div>
-    <button id="logoutBtn">Logout</button>
+
+    <div class="search-section" id="searchSection" style="display:none;">
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search anything..." />
+        <button id="searchBtn">Search</button>
+        <button id="voiceSearchBtn">🎤</button>
+        <button id="aiAskBtn">Ask AI</button>
+      </div>
+
+      <div class="categories" id="categories" style="display: none;">
+        <button onclick="showTab('images')">Images</button>
+        <button onclick="showTab('pdfs')">PDFs</button>
+      </div>
+
+      <div id="results"></div>
+    </div>
   </div>
 
   <script src="script.js"></script>
