@@ -1,142 +1,37 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChatMe</title>
-  <link href="https://fonts.googleapis.com/css2?family=Product+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Product Sans', sans-serif;
-      background: linear-gradient(to right, #00aaff, #004466);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      height: 100vh;
-      padding-top: 50px;
-    }h1 {
-  font-size: 64px;
-  font-weight: bold;
-  letter-spacing: 3px;
-  background: linear-gradient(90deg, #ffcc00, #ff3366);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-#searchInput {
-  width: 60%;
-  padding: 15px;
-  font-size: 18px;
-  border: none;
-  border-radius: 50px;
-  outline: none;
-  margin: 20px 0;
-}
-
-#searchBtn {
-  padding: 10px 25px;
-  border-radius: 50px;
-  background-color: #ffffff;
-  color: #004466;
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-#searchBtn:hover {
-  background-color: #e0e0e0;
-}
-
-.category-buttons {
-  display: flex;
-  gap: 15px;
-  margin-top: 20px;
-}
-
-.category-buttons button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 30px;
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.category-buttons button:hover {
-  background-color: rgba(255, 255, 255, 0.4);
-}
-
-#results {
-  width: 80%;
-  background-color: white;
-  color: #222;
-  padding: 20px;
-  border-radius: 10px;
-  margin-top: 30px;
-  display: none;
-}
-
-#loginSection {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-}
-
-#loginSection button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 20px;
-  background-color: white;
-  color: #004466;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-  </style>
+  <title>ChatMe Search</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/algoliasearch/dist/algoliasearch-lite.umd.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <div id="loginSection">
-    <button id="loginToggleBtn">Login</button>
-  </div>  <h1>ChatMe</h1>
-  <input type="text" id="searchInput" placeholder="Search ChatMe..." />
-  <button id="searchBtn">Search</button>  <div class="category-buttons">
-    <button>Images</button>
-    <button>PDFs</button>
-    <button>News</button>
-    <button>Shopping</button>
-  </div>  <div id="results"></div>  <script>
-    const searchBtn = document.getElementById('searchBtn');
-    const searchInput = document.getElementById('searchInput');
-    const results = document.getElementById('results');
-    const loginToggleBtn = document.getElementById('loginToggleBtn');
+  <div class="container">
+    <h1 class="logo">Chat<span>M</span>e</h1>
 
-    let isLoggedIn = false;
+    <div id="authButtons">
+      <button id="googleLoginBtn">Sign in with Google</button>
+      <button id="logoutBtn" style="display:none;">Logout</button>
+    </div>
 
-    loginToggleBtn.addEventListener('click', () => {
-      isLoggedIn = !isLoggedIn;
-      loginToggleBtn.textContent = isLoggedIn ? 'Logout' : 'Login';
-      alert(isLoggedIn ? 'You are now logged in!' : 'You are logged out.');
-    });
+    <div id="searchSection" style="display:none;">
+      <input type="text" id="searchInput" placeholder="Search anything..." />
+      <button id="searchBtn">Search</button>
 
-    searchBtn.addEventListener('click', () => {
-      const query = searchInput.value.trim();
-      if (query === '') {
-        alert('Please enter a search term.');
-        return;
-      }
+      <div class="categories">
+        <button>Images</button>
+        <button>PDFs</button>
+        <button>News</button>
+        <button>Shopping</button>
+      </div>
 
-      if (!isLoggedIn) {
-        alert('Please login to search.');
-        return;
-      }
+      <div id="results"></div>
+    </div>
+  </div>
 
-      // Simulated results
-      results.style.display = 'block';
-      results.innerHTML = `<h3>Results for: "${query}"</h3><p>This is where your custom search results will be shown.</p>`;
-    });
-  </script></body>
+  <script src="script.js"></script>
+</body>
 </html>
