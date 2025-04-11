@@ -3,14 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ChatMe Search</title>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-  <!-- Style -->
+  <title>ChatMe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -18,18 +11,30 @@
       background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
       color: white;
       height: 100vh;
-      overflow: hidden;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .bubble {
+      position: absolute;
+      bottom: -100px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      animation: rise 10s infinite ease-in;
+    }
+    @keyframes rise {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(-1200px); opacity: 0; }
     }
     .container {
       text-align: center;
-      padding-top: 100px;
+      padding-top: 80px;
       position: relative;
       z-index: 10;
     }
     .logo {
       font-size: 3rem;
       font-weight: bold;
-      background: linear-gradient(to right, #00c6ff, #0072ff);
+      background: linear-gradient(to right, #00c6ff, #0072ff, #00ffcc);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       animation: fadeIn 2s ease-in-out;
@@ -38,99 +43,66 @@
       from { opacity: 0; transform: scale(0.8); }
       to { opacity: 1; transform: scale(1); }
     }
-    #authButtons, #searchSection {
-      margin-top: 40px;
-    }
-    input[type="text"] {
+    input, button {
+      margin: 8px;
       padding: 12px;
-      width: 60%;
       font-size: 1rem;
       border-radius: 25px;
       border: none;
       outline: none;
     }
-    button {
-      padding: 10px 18px;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      margin: 10px;
-      background-color: #00c6ff;
-      color: white;
-      font-weight: bold;
+    input {
+      width: 60%;
     }
-    #results {
-      margin-top: 30px;
-      text-align: left;
-      padding: 0 20px;
+    button {
+      background-color: #0072ff;
+      color: white;
+      cursor: pointer;
+    }
+    .form-section {
+      display: none;
     }
     .categories {
       display: none;
       justify-content: center;
-      margin-top: 20px;
+      margin: 20px;
     }
     .categories button {
-      background-color: #0072ff;
+      background: #00c6ff;
+    }
+    #results {
+      margin-top: 20px;
+      padding: 0 30px;
     }
     #logoutBtn {
       position: absolute;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background-color: red;
-    }
-    .bubble {
-      position: absolute;
-      bottom: -100px;
-      width: 20px;
-      height: 20px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 50%;
-      animation: rise 10s infinite ease-in;
-    }
-    @keyframes rise {
-      0% {
-        transform: translateY(0);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-1200px);
-        opacity: 0;
-      }
+      background: red;
     }
   </style>
 </head>
 <body>
-  <!-- Bubbles -->
-  <script>
-    for (let i = 0; i < 20; i++) {
-      let bubble = document.createElement("div");
-      bubble.classList.add("bubble");
-      bubble.style.left = `${Math.random() * 100}%`;
-      bubble.style.width = bubble.style.height = `${10 + Math.random() * 30}px`;
-      bubble.style.animationDuration = `${5 + Math.random() * 5}s`;
-      document.body.appendChild(bubble);
-    }
-  </script>
-
-  <!-- App -->
   <div class="container">
     <div class="logo">Chat<span style="color: yellow;">M</span>e</div>
 
-    <div id="authButtons">
-      <button id="googleLoginBtn">Sign in with Google</button>
+    <div id="authSection">
+      <input id="email" type="email" placeholder="Email" /><br>
+      <input id="password" type="password" placeholder="Password" /><br>
+      <button id="signupBtn">Sign Up</button>
+      <button id="loginBtn">Login</button>
+      <button id="googleBtn">Sign in with Google</button>
     </div>
 
-    <div id="searchSection" style="display:none;">
-      <input type="text" id="searchInput" placeholder="Search with AI..." />
+    <div id="searchSection" class="form-section">
+      <input id="searchInput" type="text" placeholder="Search with AI..." />
       <button id="micBtn">🎤</button>
       <button id="searchBtn">Search</button>
 
       <div class="categories">
         <button>Images</button>
         <button>PDFs</button>
-        <button>News</button>
-        <button>Shopping</button>
       </div>
 
       <div id="results"></div>
@@ -139,7 +111,25 @@
     <button id="logoutBtn" style="display:none;">Logout</button>
   </div>
 
-  <!-- Firebase + Script -->
+  <!-- Bubbles JS -->
+  <script>
+    for (let i = 0; i < 20; i++) {
+      const b = document.createElement("div");
+      b.className = "bubble";
+      b.style.left = `${Math.random() * 100}%`;
+      const size = `${10 + Math.random() * 30}px`;
+      b.style.width = size;
+      b.style.height = size;
+      b.style.animationDuration = `${5 + Math.random() * 5}s`;
+      document.body.appendChild(b);
+    }
+  </script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAh8oGpHFh9O31cOXEfxkJVDX4RC5sDHrw",
@@ -149,77 +139,92 @@
       messagingSenderId: "964614544359",
       appId: "1:964614544359:web:b714e790307691694d3b42"
     };
-
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-    const provider = new firebase.auth.GoogleAuthProvider();
 
-    const googleBtn = document.getElementById("googleLoginBtn");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const signupBtn = document.getElementById("signupBtn");
+    const loginBtn = document.getElementById("loginBtn");
+    const googleBtn = document.getElementById("googleBtn");
     const logoutBtn = document.getElementById("logoutBtn");
+    const authSection = document.getElementById("authSection");
+    const searchSection = document.getElementById("searchSection");
     const searchBtn = document.getElementById("searchBtn");
     const micBtn = document.getElementById("micBtn");
     const searchInput = document.getElementById("searchInput");
-    const resultsDiv = document.getElementById("results");
-    const searchSection = document.getElementById("searchSection");
-    const authButtons = document.getElementById("authButtons");
+    const results = document.getElementById("results");
     const categories = document.querySelector(".categories");
 
-    googleBtn.addEventListener("click", () => {
-      auth.signInWithPopup(provider).then(result => {
-        showSearchPage(result.user);
-      });
-    });
+    signupBtn.onclick = () => {
+      auth.createUserWithEmailAndPassword(email.value, password.value).then(() => {
+        alert("Signup successful!");
+        showSearchUI();
+      }).catch(e => alert(e.message));
+    };
 
-    logoutBtn.addEventListener("click", () => {
+    loginBtn.onclick = () => {
+      auth.signInWithEmailAndPassword(email.value, password.value).then(() => {
+        showSearchUI();
+      }).catch(e => alert(e.message));
+    };
+
+    googleBtn.onclick = () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).then(result => {
+        showSearchUI();
+      }).catch(e => alert(e.message));
+    };
+
+    logoutBtn.onclick = () => {
       auth.signOut().then(() => location.reload());
-    });
+    };
 
     auth.onAuthStateChanged(user => {
-      if (user) showSearchPage(user);
+      if (user) showSearchUI();
     });
 
-    function showSearchPage(user) {
-      authButtons.style.display = "none";
+    function showSearchUI() {
+      authSection.style.display = "none";
       searchSection.style.display = "block";
       logoutBtn.style.display = "block";
     }
 
-    searchBtn.addEventListener("click", () => {
-      const query = searchInput.value.trim();
-      if (query) performSearch(query);
-    });
+    searchBtn.onclick = () => {
+      const q = searchInput.value.trim();
+      if (!q) return;
+      performSearch(q);
+    };
 
-    micBtn.addEventListener("click", () => {
+    micBtn.onclick = () => {
       const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       recognition.lang = 'en-US';
       recognition.start();
-      recognition.onresult = function (event) {
-        const voiceText = event.results[0][0].transcript;
-        searchInput.value = voiceText;
-        performSearch(voiceText);
+      recognition.onresult = e => {
+        const voice = e.results[0][0].transcript;
+        searchInput.value = voice;
+        performSearch(voice);
       };
-    });
+    };
 
     function performSearch(query) {
-      resultsDiv.innerHTML = `<h3>Results for "${query}"</h3>`;
-      resultsDiv.innerHTML += `
-        <p><strong>AI:</strong> Hello! Here's what we found:</p>
+      results.innerHTML = `<h3>Results for "${query}":</h3>
+        <p><strong>AI:</strong> Here's what I found:</p>
         <ul>
           <li><a href="https://source.unsplash.com/600x400/?${query}" target="_blank">Image Result</a></li>
           <li><a href="https://www.africau.edu/images/default/sample.pdf" download>Download PDF</a></li>
         </ul>`;
       categories.style.display = "flex";
-
       const user = auth.currentUser;
       if (user) {
         db.collection("searchHistory").add({
           email: user.email,
-          query: query,
+          query,
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
       }
     }
   </script>
 </body>
-  </html>
+</html>
