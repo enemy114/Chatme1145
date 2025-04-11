@@ -1,68 +1,86 @@
 body {
   margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(120deg, #0d47a1, #1976d2, #64b5f6);
-  background-size: 600% 600%;
-  animation: gradientShift 20s ease infinite;
-  color: #fff;
-  text-align: center;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  color: white;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: center;
+  overflow-x: hidden;
 }
 
 .container {
-  margin-top: 50px;
+  text-align: center;
+  animation: fadeIn 1.5s ease-in-out;
 }
 
-.chatme-logo {
-  font-size: 64px;
+.logo {
+  font-size: 3rem;
   font-weight: bold;
-  animation: popIn 1s ease;
+  color: #fff;
+  animation: zoomIn 1s ease-in-out;
 }
 
-.chatme-logo span {
-  color: #ffcc00;
-}
-
-@keyframes popIn {
-  0% { transform: scale(0.6); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-input[type="text"] {
-  padding: 10px;
-  width: 60%;
-  border-radius: 20px;
-  border: none;
-  outline: none;
-  font-size: 18px;
-  margin-top: 20px;
+.logo span {
+  color: #00bfff;
 }
 
 button {
   padding: 10px 20px;
-  border-radius: 25px;
+  margin: 8px;
   border: none;
-  font-size: 16px;
-  margin: 10px 5px;
+  background: #00bfff;
+  color: #fff;
+  font-size: 1rem;
+  border-radius: 8px;
   cursor: pointer;
-  background-color: #fff;
-  color: #0d47a1;
-  transition: 0.3s;
+  transition: transform 0.3s;
 }
 
 button:hover {
-  background-color: #ffcc00;
-  color: #000;
+  transform: scale(1.05);
+}
+
+input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 60%;
+  font-size: 1rem;
+  margin-right: 10px;
+}
+
+.searchBar {
+  margin-top: 20px;
+  animation: slideIn 1s ease-in-out;
+}
+
+.categories {
+  margin-top: 15px;
+  animation: fadeIn 2s ease-in-out;
 }
 
 #results {
   margin-top: 20px;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
+  text-align: left;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
