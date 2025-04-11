@@ -1,4 +1,4 @@
-// Firebase config
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAh8oGpHFh9O31cOXEfxkJVDX4RC5sDHrw",
   authDomain: "chatmeauth.firebaseapp.com",
@@ -8,119 +8,104 @@ const firebaseConfig = {
   appId: "1:964614544359:web:b714e790307691694d3b42"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 const provider = new firebase.auth.GoogleAuthProvider();
 
-// Algolia config
-const algoliaClient = algoliasearch("Your_APP_ID", "Your_SEARCH_ONLY_API_KEY");
-const index = algoliaClient.initIndex("Your_INDEX_NAME");
-
-// Elements
-const loginBtn = document.getElementById("googleLoginBtn");
+// UI elements
+const loginSection = document.getElementById("loginSection");
+const appSection = document.getElementById("appSection");
+const userEmail = document.getElementById("userEmail");
+const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const searchBtn = document.getElementById("searchBtn");
-const voiceBtn = document.getElementById("voiceBtn");
 const searchInput = document.getElementById("searchInput");
 const resultsDiv = document.getElementById("results");
-const authButtons = document.getElementById("authButtons");
-const searchSection = document.getElementById("searchSection");
+const categoriesDiv = document.querySelector(".categories");
+const voiceIcon = document.getElementById("voiceIcon");
 
-// Sign in
-loginBtn.onclick = () => {
-  auth.signInWithPopup(provider).then(res => {
-    const user = res.user;
-    authButtons.style.display = "none";
-    searchSection.style.display = "block";
+// Auth flow
+loginBtn.addEventListener("click", () => {
+  auth.signInWithPopup(provider).then(result => {
+    const user = result.user;
+    userEmail.textContent = "Welcome, " + user.email;
+    loginSection.classList.add("hidden");
+    appSection.classList.remove("hidden");
   });
-};
+});
 
-// Logout
-logoutBtn.onclick = () => {
+logoutBtn.addEventListener("click", () => {
   auth.signOut().then(() => {
-    authButtons.style.display = "block";
-    searchSection.style.display = "none";
+    loginSection.classList.remove("hidden");
+    appSection.classList.add("hidden");
+    resultsDiv.innerHTML = "";
+    searchInput.value = "";
   });
-};
+});
 
-// Auth state
+// Maintain session
 auth.onAuthStateChanged(user => {
   if (user) {
-    authButtons.style.display = "none";
-    searchSection.style.display = "block";
-  } else {
-    authButtons.style.display = "block";
-    searchSection.style.display = "none";
+    userEmail.textContent = "Welcome, " + user.email;
+    loginSection.classList.add("hidden");
+    appSection.classList.remove("hidden");
   }
 });
 
-// Search
-searchBtn.onclick = () => {
+// AI + Search
+searchBtn.addEventListener("click", () => {
   const query = searchInput.value.trim();
   if (!query) return;
-  performSearch(query);
-};
 
-// AI Respond
-searchInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    const query = searchInput.value.trim();
-    if (query.toLowerCase().startsWith("ai:")) {
-      showAIResponse(query.slice(3));
-    } else {
-      performSearch(query);
-    }
-  }
+  resultsDiv.innerHTML = "<p>Loading AI response...</p>";
+  categoriesDiv.style.display = "flex";
+
+  fetch(`https://api.duckduckgo.com/?q=${query}&format=json`)
+    .then(res => res.json())
+    .then(data => {
+      let aiAnswer = data.AbstractText || "No detailed answer found, but here’s what we got.";
+      resultsDiv.innerHTML = `<h3>AI Answer:</h3><p>${aiAnswer}</p>`;
+      if (auth.currentUser) {
+        db.collection("searchHistory").add({
+          email: auth.currentUser.email,
+          query: query,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }
+    });
 });
 
 // Voice search
-if ('webkitSpeechRecognition' in window) {
-  const recognition = new webkitSpeechRecognition();
-  recognition.continuous = false;
-  recognition.lang = 'en-US';
-
-  voiceBtn.addEventListener("click", () => {
-    recognition.start();
-  });
-
-  recognition.onresult = (e) => {
-    const voiceText = e.results[0][0].transcript;
-    searchInput.value = voiceText;
-    performSearch(voiceText);
+voiceIcon.addEventListener("click", () => {
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = "en-US";
+  recognition.start();
+  recognition.onresult = (event) => {
+    searchInput.value = event.results[0][0].transcript;
+    searchBtn.click();
   };
-}
+});
 
-// Search function
-function performSearch(query) {
-  index.search(query).then(({ hits }) => {
-    resultsDiv.innerHTML = `<h2>Results for "${query}":</h2>`;
-    hits.forEach(hit => {
-      const div = document.createElement("div");
-      div.innerHTML = `<strong>${hit.title}</strong><br>${hit.description || ""}<hr>`;
-      resultsDiv.appendChild(div);
-    });
+// Categories
+const categoryBtns = document.querySelectorAll(".categories button");
+categoryBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const query = searchInput.value.trim();
+    const type = btn.textContent.toLowerCase();
+    if (!query) return;
 
-    // Store search
-    const user = auth.currentUser;
-    if (user) {
-      db.collection("searchHistory").add({
-        email: user.email,
-        query: query,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
+    let url = "";
+    if (type === "images") {
+      url = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
+    } else if (type === "pdfs") {
+      url = `https://www.google.com/search?q=${encodeURIComponent(query)}+filetype:pdf`;
+    } else if (type === "news") {
+      url = `https://news.google.com/search?q=${encodeURIComponent(query)}`;
+    } else if (type === "shopping") {
+      url = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(query)}`;
     }
+    window.open(url, "_blank");
   });
-}
-
-// AI response function
-function showAIResponse(input) {
-  resultsDiv.innerHTML = `<h2>AI Response</h2>`;
-  const response = document.createElement("div");
-  response.innerHTML = `<p>I found this based on your request "<strong>${input}</strong>":</p>
-    <ul>
-      <li><a href="https://example.com/file.pdf" download>Download PDF</a></li>
-      <li><img src="https://source.unsplash.com/600x400/?${input}" alt="image result" style="max-width:100%; border-radius:10px;"/></li>
-    </ul>`;
-  resultsDiv.appendChild(response);
-}
+});
