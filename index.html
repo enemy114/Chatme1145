@@ -1,24 +1,41 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChatMe Login</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ChatMe</title>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/algoliasearch/dist/algoliasearch-lite.umd.js"></script>
 </head>
-<body class="login-page">
-  <div class="login-container">
-    <h1 class="animated-logo">Chat<span>Me</span></h1>
-    <p>Welcome to ChatMe! Sign up or log in to continue.</p>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button id="signupBtn">Sign Up</button>
+<body>
+  <div class="background-animation"></div>
+
+  <h1 class="logo">Chat<span>M</span>e</h1>
+
+  <div id="authSection">
+    <input type="email" id="emailInput" placeholder="Email" />
+    <input type="password" id="passwordInput" placeholder="Password" />
+    <button id="signUpBtn">Sign Up</button>
     <button id="loginBtn">Login</button>
-    <p>or</p>
-    <button id="googleLoginBtn">Sign in with Google</button>
+    <button id="googleBtn">Sign in with Google</button>
   </div>
-  <script src="app.js"></script>
+
+  <div id="searchSection" style="display:none;">
+    <p>Welcome, <span id="userEmail"></span></p>
+    <input type="text" id="searchInput" placeholder="Search with AI..." />
+    <button id="voiceSearchBtn">🎤</button>
+    <button id="searchBtn">Search</button>
+    <div class="categories" id="categories" style="display:none;">
+      <button class="cat-btn" data-type="images">Images</button>
+      <button class="cat-btn" data-type="pdfs">PDFs</button>
+    </div>
+    <div id="results"></div>
+    <button id="logoutBtn">Logout</button>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
